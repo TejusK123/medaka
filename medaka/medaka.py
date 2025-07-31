@@ -339,7 +339,8 @@ def check_fastx_for_dwells(fastx):
     """
     with pysam.FastxFile(fastx) as fastx:
         for read in fastx:
-            return "\tmv:" in read.comment
+            if read.comment is None: return False 
+            else: return "\tmv:" in read.comment
     return False
 
 def check_compatible(args):
