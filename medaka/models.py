@@ -195,9 +195,10 @@ def model_from_basecaller(fname, variant=False, bacteria=False):
         if model in medaka.options.bact_methyl_compatible_models:
             model = medaka.options.bact_methyl_model
         else:
-            logger.warning(
-                "WARNING: --bacteria specified but input data was not "
-                "compatible. Using default model {}.".format(model))
+            raise RuntimeError(
+                "--bacteria specified but input data was not "
+                "compatible. If you wish to proceed anyway, please "
+                "provide a bacterial model explicitly using --model.")
     return model
 
 

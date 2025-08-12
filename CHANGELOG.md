@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+### Fixed
+- Issue with checking for the presence of dwell information in fastq files.
+### Changed
+- Behaviour of `medaka_consensus` with `--bacteria` option: if the basecaller model cannot
+  be parsed or is not compatible with the bacterial polishing model, exit with an error instead of
+  falling back to default model.
+
 ## [v2.1.0]
 ### Fixed
 - Updated documentation with `inference` and `sequence` command renaming.
