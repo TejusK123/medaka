@@ -113,7 +113,12 @@ if ! $mflag; then
     echo "Attempting to automatically select model version."
     model=$(medaka tools resolve_model --auto_model consensus"${BACTERIA}" "${BASECALLS}" 2>/dev/null || true)
     if [[ "${model}" == "" ]] ; then
-        echo "WARNING: Failed to detect a model version, will use default: '${MODEL}'"
+	if [[ "${BACTERIA}" == "" ]] ; then
+	    echo "WARNING: Failed to detect a model version, will use default: '${MODEL}'"
+	else
+	    echo "ERROR: --bacteria was specified but input data was not compatible. If you wish to proceed anyway, please provide a bacterial model explicitly using -m."
+	    exit 1;
+	fi
     else
         echo "SUCCESS: Automatic model selection chose model: '${model}'"
         MODEL=${model}
