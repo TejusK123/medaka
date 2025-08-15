@@ -1,7 +1,6 @@
 """Commonly used data structures and functions."""
 import collections
 import concurrent
-from distutils.version import LooseVersion
 import enum
 import errno
 import fileinput
@@ -17,6 +16,7 @@ import intervaltree
 import numpy as np
 from pkg_resources import resource_filename
 import pysam
+
 
 import libmedaka
 
@@ -944,8 +944,10 @@ def get_named_logger(name):
 def loose_version_sort(it, key=None):
     """Sort an iterable.
 
-    Items will be sorted with `distutils.version.LooseVersion`,
-    falling back to regular sort when this fails.
+    This is a reimplementation of `distutils.version.LooseVersion` sort;
+    strings are split into alphanumeric parts, which are then
+    converted to integers or left as strings. Tuple comparison is used
+    to sort such parts.
 
     >>> loose_version_sort(['chr10', 'chr2', 'chr1'])
     ['chr1', 'chr2', 'chr10']
@@ -958,13 +960,23 @@ def loose_version_sort(it, key=None):
     ['chr1c1', 'chr1c2', 'chr1c10', 'chr2c1', ..., 'chr10c2', 'chr10c10']
     """
     def version_sorter(x):
-        return LooseVersion(x) if key is None else LooseVersion(key(x))
+        # rough reimplementation of distutils.version.LooseVersion
+        # to avoid dependency on distutils
+        if key is not None:
+            x = key(x)
+
+        find_parts_re = re.compile(r'([a-zA-Z]+|\d+|.)')
+        parts = [part for part in find_parts_re.split(x) if part.isalnum()]
+        # turn parts into integers or strings
+        parts = [int(p) if p.isdigit() else p for p in parts]
+        return tuple(parts)
+
     it = list(it)
     try:
         result = sorted(it, key=version_sorter)
     except Exception:
         logger = get_named_logger("VariantSort")
-        logger.debug("Could not sort with LooseVersion")
+        logger.debug("Could not sort with packaging.version.Version")
         result = sorted(it, key=key)
     return result
 
