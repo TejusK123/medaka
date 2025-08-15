@@ -1,9 +1,10 @@
 """Consensus and variant calling of Nanopore sequencing data."""
-from distutils.version import LooseVersion
 import functools
 import os
 import subprocess
 import sys
+
+from packaging.version import Version
 
 __version__ = "2.1.0"
 
@@ -29,7 +30,7 @@ def check_minimap2_version():
         if proc.returncode != 0:
             return None
         # 2.11-r797
-        version = LooseVersion(proc.stdout.decode().split('-')[0])
+        version = Version(proc.stdout.decode().split('-')[0])
     except Exception:
         return None
 
@@ -44,7 +45,7 @@ def check_htslib_tool_version(tool, pos=2):
         information. e.g. `pos=2` extracts `1.3.1` from
         `tabix (htslib) 1.3.1`.
 
-    :returns: the `LooseVersion` number.
+    :returns: the `Version` number.
     """
     try:
         proc = subprocess.run([tool, "--version"], stdout=subprocess.PIPE)
@@ -53,7 +54,7 @@ def check_htslib_tool_version(tool, pos=2):
         # tabix (htslib) 1.3.1\n...
         first_line = proc.stdout.decode().split("\n", 1)[0]
         version = first_line.split()[pos]
-        version = LooseVersion(version)
+        version = Version(version)
     except Exception:
         return None
 
@@ -70,11 +71,11 @@ check_bcftools_version = functools.partial(
     check_htslib_tool_version, 'bcftools', 1)
 
 required_version = {
-    'minimap2': LooseVersion('2.11'),
-    'samtools': LooseVersion('1.11'),
-    'tabix': LooseVersion('1.11'),
-    'bgzip': LooseVersion('1.11'),
-    'bcftools': LooseVersion('1.11'),
+    'minimap2': Version('2.11'),
+    'samtools': Version('1.11'),
+    'tabix': Version('1.11'),
+    'bgzip': Version('1.11'),
+    'bcftools': Version('1.11'),
 }
 
 get_version = {

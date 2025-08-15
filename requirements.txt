@@ -11,6 +11,7 @@ ont-mappy
 ont_fast5_api
 ont-parasail
 # 0.16.0 is broken, various others too
+packaging
 pysam>=0.16.0.1
 # 0.2.0 has `min_coverage` parameter
 pyspoa>=0.2.1

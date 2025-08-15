@@ -22,7 +22,6 @@ stages:
     export PYTHON=$(PYENV_VERSION=$PYENV_VERSION pyenv which python)
 
 .preparetest: &preparetest
-    stage: test
     before_script:
         - export DEBIAN_FRONTEND=noninteractive
         - apt-get update -qq
@@ -38,7 +37,7 @@ stages:
     before_script:
         - export DEBIAN_FRONTEND=noninteractive
         - apt-get update -qq && apt-get install -y -qq
-          python3-all-dev python3-venv
+          python3-all-dev python3-venv git
 
 
 # Check that the changelog is up to date and other stuff
@@ -58,6 +57,7 @@ deploy-checks:
 
 # medaka test suite on various Pythons, latest as of 2024-08-14
 pytest: &pytest
+    stage: test
     <<: *preparetest
     variables:
         MEDAKA_CPU: 1
@@ -67,17 +67,16 @@ pytest: &pytest
         - make test-variants
     parallel:
         matrix:
-            - PYENV_VERSION: 3.8.19
             - PYENV_VERSION: 3.9.19
             - PYENV_VERSION: 3.10.14
             - PYENV_VERSION: 3.11.9
-            # no edlib for 3.12, and bdist_wheel fails
-            #- PYENV_VERSION: 3.12.5
+            - PYENV_VERSION: 3.12.10
 
 
 test-mem-check:
+    stage: test
     variables:
-        PYENV_VERSION: 3.8.18
+        PYENV_VERSION: 3.10.17
     <<: *preparetest
     script:
         - make mem_check
@@ -89,7 +88,9 @@ test-mem-check:
 
 build:sdist:
     stage: build
-    <<: *minimal-python
+    <<: *preparetest
+    variables:
+        PYENV_VERSION: 3.9.19
     script:
         - make sdist
     artifacts:
@@ -119,7 +120,7 @@ wheels-2014:
     image: "quay.io/pypa/manylinux2014_x86_64"
     parallel:
         matrix:
-            - PYWHEEL: [8, 9]
+            - PYWHEEL: [9]
               COMPUTE: ["gpu", "cpu"]
               FLAVOUR: ["2014"]
 
@@ -131,7 +132,7 @@ wheels-2_28:
         - dnf install -y libffi-devel
     parallel:
         matrix:
-            - PYWHEEL: [8, 9, 10, 11]
+            - PYWHEEL: [9, 10, 11, 12]
               COMPUTE: ["gpu", "cpu"]
               FLAVOUR: ["2_28"]
 
@@ -157,7 +158,7 @@ wheels-arm-2014:
         - sed -i '/^torch~=[^[:space:]]*/s/^torch~=[^[:space:]]*/torch==2.0.1/' requirements.txt
     parallel:
         matrix:
-            - PYWHEEL: [8, 9, 10]
+            - PYWHEEL: [9, 10]
               COMPUTE: ["gpu"]
               FLAVOUR: ["2014"]
 
@@ -185,7 +186,7 @@ wheels-arm-2014:
         matrix:
             # 8 gives grief with wanted to add -mtune=haswell \:D/
             # suggests platform.machine() isn't reported correctly
-            - PYWHEEL: [9, 10, 11]
+            - PYWHEEL: [9, 10, 11, 12]
 
 
 macOS-arm64-wheel:
