@@ -5,6 +5,7 @@ import enum
 import errno
 import fileinput
 import functools
+import importlib.resources
 import itertools
 import logging
 import os
@@ -14,7 +15,6 @@ import tempfile
 
 import intervaltree
 import numpy as np
-from pkg_resources import resource_filename
 import pysam
 
 
@@ -931,7 +931,7 @@ def roundrobin(*iterables):
 
 def print_data_path():
     """Print data directory containing models."""
-    print(resource_filename(__package__, 'data'))
+    print(importlib.resources.files(__package__) / 'data')
 
 
 def get_named_logger(name):
