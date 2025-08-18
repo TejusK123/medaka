@@ -2,10 +2,9 @@
 
 # note this module is imported into setup.py, so do not use any
 # non-stdlib packages
+import importlib.resources
 import os
 import pathlib
-
-import pkg_resources
 
 # the models used by default for CLI entry points
 default_models = {
@@ -221,7 +220,7 @@ allowed_models = sorted(set(known_models) - set(deprecated_models))
 # where we look for model files and store them
 model_subdir = 'data'
 model_stores = (
-    pkg_resources.resource_filename(__package__, model_subdir),
+    importlib.resources.files(__package__) / model_subdir,
     os.path.join(
         str(pathlib.Path.home()), '.{}'.format(__package__), model_subdir)
 )

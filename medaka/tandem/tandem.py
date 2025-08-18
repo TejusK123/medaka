@@ -1,12 +1,12 @@
 """Variant calling in tandem repeats."""
 
+import importlib.metadata
 import os
 import re
 import sys
 from typing import List
 
 from packaging.version import Version
-import pkg_resources
 import pysam
 
 from medaka import abpoa
@@ -77,7 +77,7 @@ def check_abpoa_version():
             'abpoa documentation at https://github.com/yangao07/abPOA '
             'for installation instructions.')
     else:
-        version = pkg_resources.get_distribution("pyabpoa").version
+        version = importlib.metadata.distribution("pyabpoa").version
         if Version(version) != Version(abpoa_required_version):
             raise RuntimeError(
                 f"pyabpoa == {abpoa_required_version} required, got {version}")

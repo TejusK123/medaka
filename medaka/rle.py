@@ -8,7 +8,6 @@ import sys
 
 import h5py
 import numpy as np
-from ont_fast5_api.fast5_interface import get_fast5_file
 import pysam
 
 import medaka.align
@@ -310,6 +309,7 @@ def _rle_bam_hdf_worker(data):
     if read_id is None:
         new_line = line  # parent passes header lines
     else:
+        from ont_fast5_api.fast5_interface import get_fast5_file  # noqa: E402
         with get_fast5_file(fname, mode="r") as f5:
             # this gives an error
             # run_lengths = read.get_analysis_dataset(
@@ -340,6 +340,10 @@ def _rle_bam_hdf_worker(data):
 def rlebam(args):
     """Entry point for merging run length information for fast5s to bam."""
     logger = medaka.common.get_named_logger('BAMDecor')
+    logger.warning((
+        "Merging run length information from fast5s to bams is deprecated "
+        "and will be removed in future versions of medaka.")
+    )
     read_index = medaka.common.read_key_value_tsv(args.read_index)
     logger.info("Found {} read in index\n".format(len(read_index)))
 
